@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
 
   const { postUrl } = req.body;
   const API_TOKEN = process.env.APIFY_TOKEN;
-  const IG_SESSION = process.env.INSTAGRAM_SESSION; // Cookie de sessão do Instagram
+  const IG_SESSION = process.env.INSTAGRAM_SESSION;
 
   if (!API_TOKEN) {
     return res.status(500).json({ error: 'Token do Apify não configurado no Vercel.' });
@@ -31,10 +31,13 @@ module.exports = async function handler(req, res) {
   try {
     const actorId = 'apify~instagram-comment-scraper';
 
-    // Monta o payload incluindo o cookie de sessão se ele existir
+    // Configuração completa com Proxies e Sessão
     const actorInput = {
       directUrls: [postUrl],
-      resultsLimit: 5000
+      resultsLimit: 5000,
+      proxyConfiguration: {
+        useApifyProxy: true
+      }
     };
 
     if (IG_SESSION) {
@@ -47,7 +50,7 @@ module.exports = async function handler(req, res) {
       ];
     }
 
-    // 1. Iniciar run no Apify com autenticação
+    // 1. Iniciar run no Apify
     const runRes = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${API_TOKEN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
