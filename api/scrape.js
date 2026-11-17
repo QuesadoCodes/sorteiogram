@@ -1,13 +1,27 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
   const { postUrl } = req.body;
-  const API_TOKEN = process.env.APIFY_TOKEN; // Pega a chave secreta do Vercel
+  const API_TOKEN = process.env.APIFY_TOKEN;
 
   if (!API_TOKEN) {
-    return res.status(500).json({ error: 'Token do Apify não configurado no servidor.' });
+    return res.status(500).json({ error: 'Token do Apify não configurado nas Variáveis de Ambiente do Vercel.' });
   }
 
   if (!postUrl) {
@@ -27,7 +41,10 @@ export default async function handler(req, res) {
       })
     });
 
-    if (!runRes.ok) throw new Error('Falha ao acionar a API do Apify.');
+    if (!runRes.ok) {
+      const errText = await runRes.text();
+      throw new Error(`Falha ao acionar Apify: ${errText}`);
+    }
 
     const runJson = await runRes.json();
     const runId = runJson.data.id;
@@ -53,7 +70,7 @@ export default async function handler(req, res) {
     }
 
     if (!isFinished) {
-      throw new Error('Tempo limite excedido.');
+      throw new Error('Tempo limite excedido ao aguardar a raspagem.');
     }
 
     // 3. Buscar dados do dataset
@@ -70,4 +87,4 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-}
+};
