@@ -1,5 +1,4 @@
 module.exports = async function handler(req, res) {
-  // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -19,9 +18,10 @@ module.exports = async function handler(req, res) {
 
   const { postUrl } = req.body;
   const API_TOKEN = process.env.APIFY_TOKEN;
+  const IG_SESSION = process.env.INSTAGRAM_SESSION; // Cookie de sessão do Instagram
 
   if (!API_TOKEN) {
-    return res.status(500).json({ error: 'Token do Apify não configurado nas Variáveis de Ambiente do Vercel.' });
+    return res.status(500).json({ error: 'Token do Apify não configurado no Vercel.' });
   }
 
   if (!postUrl) {
@@ -31,14 +31,27 @@ module.exports = async function handler(req, res) {
   try {
     const actorId = 'apify~instagram-comment-scraper';
 
-    // 1. Iniciar run no Apify
+    // Monta o payload incluindo o cookie de sessão se ele existir
+    const actorInput = {
+      directUrls: [postUrl],
+      resultsLimit: 5000
+    };
+
+    if (IG_SESSION) {
+      actorInput.sessionCookie = [
+        {
+          name: 'sessionid',
+          value: IG_SESSION,
+          domain: '.instagram.com'
+        }
+      ];
+    }
+
+    // 1. Iniciar run no Apify com autenticação
     const runRes = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${API_TOKEN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        directUrls: [postUrl],
-        resultsLimit: 5000
-      })
+      body: JSON.stringify(actorInput)
     });
 
     if (!runRes.ok) {
@@ -73,7 +86,7 @@ module.exports = async function handler(req, res) {
       throw new Error('Tempo limite excedido ao aguardar a raspagem.');
     }
 
-    // 3. Buscar dados do dataset
+    // 3. Buscar dados do dataset completo
     const dataRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${API_TOKEN}`);
     const items = await dataRes.json();
 
