@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteiogram Pro — Sorteios Transparentes para Instagram</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090D16',
+                        cardBg: '#121826',
+                        purpleAccent: '#8b5cf6',
+                        pinkAccent: '#ec4899',
+                        amberAccent: '#f59e0b'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .insta-gradient-text {
+            background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .insta-gradient-bg {
+            background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+        }
+        .glass-panel {
+            background: rgba(18, 24, 38, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.08); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 6s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans min-h-screen selection:bg-pink-500 selection:text-white relative overflow-x-hidden">
+
+    <!-- Background Glows -->
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none animate-pulse-glow"></div>
+    <div class="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[160px] pointer-events-none animate-pulse-glow" style="animation-delay: 3s;"></div>
+
+    <!-- Header -->
+    <header class="border-b border-white/10 bg-darkBg/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl insta-gradient-bg flex items-center justify-center shadow-xl shadow-purple-900/40">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight insta-gradient-text">Sorteiogram Pro</span>
+                    <span class="text-xs block text-slate-400 font-medium">Sorteios Justos & Animados na Tela</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                    Sistema Pronto
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="giveawayApp()">
+
+        <!-- Hero -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+                Realize seu Sorteio com <span class="insta-gradient-text">Animação na Tela</span>
+            </h1>
+            <p class="text-slate-400 text-lg">
+                Cole os comentários da sua postagem, aplique regras e realize o sorteio ao vivo com roleta eletrônica e confirmação instantânea.
+            </p>
+        </div>
+
+        <!-- Quick Sample Loader -->
+        <div class="glass-panel rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-pink-500">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <p class="text-sm text-slate-300">
+                    Quer testar rapidamente? Clique ao lado para carregar uma lista de exemplo com comentários e menções.
+                </p>
+            </div>
+            <button @click="loadSampleData()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition shrink-0 border border-white/10">
+                ✨ Carregar Exemplo Prático
+            </button>
+        </div>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Input & Rules (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Comment Input -->
+                <div class="glass-panel rounded-3xl p-6 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-sm font-semibold text-white flex items-center space-x-2">
+                            <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-mono font-bold">1</span>
+                            <span>Lista de Comentários</span>
+                        </label>
+                        <span class="text-xs text-slate-400 font-mono" x-text="rawInput.trim() ? rawInput.split('\n').length + ' linhas' : '0 linhas'"></span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">
+                        Formato: <code class="text-purple-300 bg-purple-950/60 px-1.5 py-0.5 rounded font-mono">@usuario: comentário</code>
+                    </p>
+                    <textarea 
+                        x-model="rawInput" 
+                        @input="processComments()"
+                        rows="7" 
+                        class="w-full bg-[#04060B] border border-white/10 rounded-2xl p-4 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 font-mono transition"
+                        placeholder="@julia_silva: Eu quero ganhar! 🎁 @amigo1
+@carlos_dev: Participando #quero
+@mariana123: Melhor sorteio!"></textarea>
+
+                    <div class="mt-3 flex items-center justify-between">
+                        <button @click="rawInput = ''; processComments();" class="text-xs text-slate-400 hover:text-red-400 transition flex items-center space-x-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <span>Limpar</span>
+                        </button>
+                        <span class="text-xs text-emerald-400 font-medium" x-text="participants.length + ' aptos para o sorteio'"></span>
+                    </div>
+                </div>
+
+                <!-- Rules & Filters -->
+                <div class="glass-panel rounded-3xl p-6 shadow-xl">
+                    <label class="block text-sm font-semibold text-white flex items-center space-x-2 mb-4">
+                        <span class="w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center text-xs font-mono font-bold">2</span>
+                        <span>Filtros do Sorteio</span>
+                    </label>
+
+                    <div class="space-y-3">
+                        <label class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition cursor-pointer">
+                            <div class="pr-3">
+                                <span class="text-sm font-medium text-white block">Remover duplicadas por usuário</span>
+                                <span class="text-xs text-slate-400">Cada @usuário participa 1 única vez</span>
+                            </div>
+                            <input type="checkbox" x-model="rules.removeDuplicates" @change="processComments()" class="w-5 h-5 rounded border-white/20 bg-slate-900 text-pink-600 focus:ring-pink-500">
+                        </label>
+
+                        <div class="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-white">Filtrar por palavra obrigatória</span>
+                                <input type="checkbox" x-model="rules.useKeyword" @change="processComments()" class="w-5 h-5 rounded border-white/20 bg-slate-900 text-pink-600 focus:ring-pink-500">
+                            </div>
+                            <div x-show="rules.useKeyword" x-cloak class="pt-1">
+                                <input type="text" x-model="rules.keyword" @input="processComments()" placeholder="Ex: eu quero, quero" class="w-full bg-[#04060B] border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pink-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Draw Machine & Results (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- Main Draw Machine Card -->
+                <div class="glass-panel rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl border border-purple-500/30">
+                    <div class="absolute inset-0 bg-gradient-to-b from-purple-600/10 via-transparent to-pink-600/10 pointer-events-none"></div>
+
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 rounded-2xl insta-gradient-bg mx-auto flex items-center justify-center shadow-2xl shadow-purple-900/40 mb-5">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+
+                        <h2 class="text-2xl font-bold text-white mb-2">Tômbola de Sorteio Ao Vivo</h2>
+                        <p class="text-slate-400 text-sm mb-8" x-text="participants.length > 0 ? 'Tudo pronto! Clique abaixo para iniciar o sorteio animado na tela.' : 'Adicione comentários na lista ao lado para iniciar.'"></p>
+
+                        <!-- Rolling Display Box -->
+                        <div class="mb-8 p-6 rounded-2xl bg-[#04060B] border border-purple-500/40 shadow-inner min-h-[140px] flex flex-col items-center justify-center relative">
+                            <span class="absolute top-3 left-4 text-[10px] uppercase tracking-widest text-purple-400 font-mono font-bold" x-text="isDrawing ? 'Sorteando em tempo real...' : (hasDrawn ? 'Vencedor Sorteado!' : 'Aguardando Sorteio')"></span>
+                            
+                            <div class="text-3xl sm:text-4xl font-black font-mono insta-gradient-text tracking-wider my-2" x-text="currentDisplayUser">@participante</div>
+                            <p class="text-xs text-slate-400 italic max-w-md truncate px-4" x-text="currentDisplayComment">"Comentário do participante aparecerá aqui"</p>
+                        </div>
+
+                        <!-- Action Buttons: Sortear / Confirmar / Refazer -->
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button 
+                                @click="startDraw()" 
+                                :disabled="participants.length === 0 || isDrawing"
+                                :class="participants.length > 0 && !isDrawing ? 'insta-gradient-bg hover:opacity-95 shadow-xl shadow-purple-600/40 cursor-pointer' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
+                                class="px-8 py-4 rounded-2xl font-extrabold text-base text-white transition transform active:scale-95">
+                                <span x-show="!isDrawing">🎉 Sortear Vencedor Agora!</span>
+                                <span x-show="isDrawing">Sorteando...</span>
+                            </button>
+
+                            <template x-if="hasDrawn && !isDrawing">
+                                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                    <button @click="startDraw()" class="px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition border border-white/10">
+                                        🔄 Refazer Sorteio
+                                    </button>
+                                    <button @click="confirmWinner()" class="px-6 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-emerald-900/40">
+                                        ✅ Confirmar Vencedor
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmed Winner Showcase Card -->
+                <template x-if="confirmedWinner">
+                    <div class="glass-panel rounded-3xl p-6 border-2 border-emerald-500/50 bg-emerald-950/10 shadow-2xl animate-fade-in">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div class="flex-1">
+                                <span class="text-xs uppercase tracking-widest text-emerald-400 font-extrabold block">Vencedor Oficial Confirmado! 🏆</span>
+                                <h3 class="text-xl font-bold text-white font-mono" x-text="confirmedWinner.user"></h3>
+                                <p class="text-xs text-slate-300 italic mt-0.5" x-text="`"${confirmedWinner.comment}"`"></p>
+                            </div>
+                            <button @click="confirmedWinner = null" class="text-xs text-slate-400 hover:text-white p-2">Limpar</button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Participants List Preview -->
+                <div class="glass-panel rounded-3xl p-6 shadow-xl">
+                    <h3 class="text-sm font-semibold text-white mb-4 flex items-center justify-between">
+                        <span>Participantes Aptos na Tômbola</span>
+                        <span class="text-xs text-purple-300 font-mono px-2 py-0.5 rounded-full bg-purple-500/20" x-text="participants.length"></span>
+                    </h3>
+                    <div class="max-h-48 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-slate-700">
+                        <template x-for="(p, index) in participants" :key="index">
+                            <div class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                                <div class="flex items-center space-x-3">
+                                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 font-mono text-xs flex items-center justify-center font-bold" x-text="index + 1"></span>
+                                    <div>
+                                        <span class="font-mono text-sm font-semibold text-purple-300" x-text="p.user"></span>
+                                        <p class="text-xs text-slate-400 truncate max-w-xs sm:max-w-md" x-text="p.comment"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="participants.length === 0" class="text-center py-6 text-slate-500 text-sm">
+                            Nenhum participante na lista. Cole os comentários acima.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-darkBg mt-20 py-8 text-center text-xs text-slate-500">
+        <p>Sorteiogram Pro — Sorteios transparentes e animados para criadores de conteúdo do Instagram.</p>
+    </footer>
+
+    <!-- Alpine App Logic -->
+    <script>
+        function giveawayApp() {
+            return {
+                rawInput: '@julia_silva: Eu quero muito ganhar esse super kit!! @amigo1 @amigo2\n@carlos_dev: Participando do sorteio! #quero\n@mariana123: Melhor sorteio do ano @amigo3\n@julia_silva: Segundo comentário pra garantir!\n@lucas_souza: Participando muito! eu quero\n@beatriz_costa: Quero ganhar demais!! @amigo1\n@roberto_silva: Top demais essa promoção\n@camila_lima: Eu quero! @amigo6',
+                participants: [],
+                rules: {
+                    removeDuplicates: true,
+                    useKeyword: false,
+                    keyword: ''
+                },
+                isDrawing: false,
+                hasDrawn: false,
+                currentDisplayUser: '@sorteado_aqui',
+                currentDisplayComment: 'O comentário premiado aparecerá aqui',
+                winner: null,
+                confirmedWinner: null,
+
+                init() {
+                    this.processComments();
+                },
+
+                loadSampleData() {
+                    this.rawInput = `@julia_silva: Eu quero muito ganhar esse super kit!! @amigo1 @amigo2
+@carlos_dev: Participando do sorteio! #quero
+@mariana123: Melhor sorteio do ano @amigo3
+@julia_silva: Segundo comentário pra garantir!
+@lucas_souza: Participando muito! eu quero
+@beatriz_costa: Quero ganhar demais!! @amigo1
+@roberto_silva: Top demais essa promoção
+@camila_lima: Eu quero! @amigo6`;
+                    this.processComments();
+                },
+
+                processComments() {
+                    const lines = this.rawInput.split('\n').filter(l => l.trim() !== '');
+                    let parsed = [];
+                    
+                    for (let line of lines) {
+                        let user = 'anônimo';
+                        let comment = line;
+
+                        if (line.includes(':')) {
+                            let parts = line.split(':');
+                            user = parts[0].trim().replace('@', '');
+                            comment = parts.slice(1).join(':').trim();
+                        }
+
+                        parsed.push({ user: '@' + user, comment: comment });
+                    }
+
+                    let filtered = parsed;
+                    if (this.rules.useKeyword && this.rules.keyword.trim() !== '') {
+                        const kw = this.rules.keyword.toLowerCase();
+                        filtered = filtered.filter(p => p.comment.toLowerCase().includes(kw));
+                    }
+
+                    if (this.rules.removeDuplicates) {
+                        let seen = new Set();
+                        let unique = [];
+                        for (let p of filtered) {
+                            if (!seen.has(p.user)) {
+                                seen.add(p.user);
+                                unique.push(p);
+                            }
+                        }
+                        this.participants = unique;
+                    } else {
+                        this.participants = filtered;
+                    }
+                },
+
+                startDraw() {
+                    if (this.participants.length === 0 || this.isDrawing) return;
+
+                    this.isDrawing = true;
+                    this.hasDrawn = false;
+                    this.confirmedWinner = null;
+
+                    let counter = 0;
+                    let maxCount = 28;
+                    let intervalTime = 70;
+
+                    let roll = () => {
+                        let randomIndex = Math.floor(Math.random() * this.participants.length);
+                        let candidate = this.participants[randomIndex];
+                        
+                        this.currentDisplayUser = candidate.user;
+                        this.currentDisplayComment = candidate.comment;
+                        counter++;
+
+                        if (counter < maxCount) {
+                            setTimeout(roll, intervalTime);
+                            intervalTime += 6; // Desaceleração progressiva
+                        } else {
+                            let finalIndex = Math.floor(Math.random() * this.participants.length);
+                            this.winner = this.participants[finalIndex];
+                            
+                            this.currentDisplayUser = this.winner.user;
+                            this.currentDisplayComment = this.winner.comment;
+                            
+                            this.isDrawing = false;
+                            this.hasDrawn = true;
+
+                            confetti({
+                                particleCount: 140,
+                                spread: 90,
+                                origin: { y: 0.6 }
+                            });
+                        }
+                    };
+
+                    roll();
+                },
+
+                confirmWinner() {
+                    if (this.winner) {
+                        this.confirmedWinner = this.winner;
+                        confetti({
+                            particleCount: 80,
+                            spread: 60,
+                            origin: { y: 0.4 }
+                        });
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
