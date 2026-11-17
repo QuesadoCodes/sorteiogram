@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insta Sorteio Live — Sorteador Automático para Instagram</title>
+    <title>Insta Sorteio Pro — Extrator & Sorteador Real via Apify</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,11 +12,12 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#090D16',
-                        cardBg: '#111622',
+                        darkBg: '#0B0F19',
+                        cardBg: '#121826',
                         purpleAccent: '#8b5cf6',
                         pinkAccent: '#ec4899',
-                        amberAccent: '#f59e0b'
+                        amberAccent: '#f59e0b',
+                        emeraldAccent: '#10b981'
                     },
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
@@ -29,7 +30,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Alpine.js -->
@@ -45,17 +46,17 @@
             background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
         }
         .glass-panel {
-            background: rgba(17, 22, 34, 0.85);
+            background: rgba(18, 24, 38, 0.85);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
     </style>
 </head>
-<body class="bg-darkBg text-slate-100 font-sans min-h-screen selection:bg-pink-500 selection:text-white relative overflow-x-hidden" x-data="instaGiveawayApp()">
+<body class="bg-darkBg text-slate-100 font-sans min-h-screen selection:bg-pink-500 selection:text-white relative overflow-x-hidden" x-data="giveawayApp()">
 
     <!-- Ambient Glows -->
-    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[160px] pointer-events-none"></div>
+    <div class="absolute top-0 left-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+    <div class="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-pink-600/10 rounded-full blur-[170px] pointer-events-none"></div>
 
     <!-- Header -->
     <header class="border-b border-white/10 bg-darkBg/90 backdrop-blur-md sticky top-0 z-50">
@@ -65,44 +66,49 @@
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
                 </div>
                 <div>
-                    <span class="text-xl font-extrabold tracking-tight insta-gradient-text">Insta Sorteio Live</span>
-                    <span class="text-xs block text-slate-400 font-medium">Extração por Link & Sorteio Automático</span>
+                    <span class="text-xl font-extrabold tracking-tight insta-gradient-text">Insta Sorteio Pro</span>
+                    <span class="text-xs block text-slate-400 font-medium">Extrator via Apify & Sorteador Visual</span>
                 </div>
             </div>
             
-            <!-- Auth Status / Login Button -->
-            <div>
-                <template x-if="!isLoggedIn">
-                    <button @click="openLoginModal()" class="px-5 py-2.5 rounded-xl insta-gradient-bg text-white text-xs font-bold shadow-lg shadow-purple-900/30 hover:opacity-90 transition flex items-center space-x-2">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.790-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                        <span>Entrar com Instagram</span>
-                    </button>
-                </template>
-                <template x-if="isLoggedIn">
-                    <div class="flex items-center space-x-3 px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                        <div class="w-7 h-7 rounded-full insta-gradient-bg flex items-center justify-center text-xs font-bold text-white" x-text="username.charAt(1).toUpperCase()"></div>
-                        <span class="text-xs font-mono font-bold text-purple-300" x-text="username"></span>
-                        <button @click="logout()" class="text-xs text-slate-400 hover:text-red-400 ml-2">Sair</button>
-                    </div>
-                </template>
+            <div class="flex items-center space-x-3">
+                <button @click="showSettings = !showSettings" class="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+                    <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Configurar Token</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Workspace -->
+    <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <!-- Hero Title -->
+        <!-- Settings Modal / Drawer -->
+        <div x-show="showSettings" x-cloak class="max-w-3xl mx-auto mb-8 glass-panel rounded-3xl p-6 border border-purple-500/30">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                    <span>Configuração da API do Apify</span>
+                </h3>
+                <button @click="showSettings = false" class="text-xs text-slate-400 hover:text-white">Fechar</button>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Insira o seu Personal API Token do Apify para habilitar a extração real de comentários de posts públicos do Instagram.</p>
+            <div class="flex gap-2">
+                <input type="password" x-model="apifyToken" placeholder="apify_api_..." class="flex-1 bg-[#04060B] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-purple-500">
+                <button @click="saveToken()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition">Salvar Token</button>
+            </div>
+        </div>
+
+        <!-- Hero -->
         <div class="text-center max-w-3xl mx-auto mb-10">
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-                Sorteios Automáticos por <span class="insta-gradient-text">Link do Instagram</span>
+                Sorteio Real com <span class="insta-gradient-text">Apify & Instagram</span>
             </h1>
             <p class="text-slate-400 text-lg">
-                Insira o link da postagem para carregar os comentários automaticamente e realizar o sorteio ao vivo na tela.
+                Insira o link da postagem para raspar os comentários reais via nuvem e realizar o sorteio com transparência total.
             </p>
         </div>
 
-        <!-- STEP 1: Link Input & Extraction Card -->
+        <!-- STEP 1: Link Extractor Card -->
         <div class="max-w-3xl mx-auto glass-panel rounded-3xl p-8 shadow-2xl mb-10 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -114,138 +120,154 @@
                     </label>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <input type="text" x-model="postUrl" placeholder="https://www.instagram.com/p/DF3XyZ..." class="flex-1 bg-[#04060B] border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 font-mono transition">
-                        <button @click="fetchCommentsByLink()" :disabled="isFetching" class="px-8 py-3.5 rounded-2xl insta-gradient-bg text-white font-extrabold text-sm shadow-xl shadow-purple-900/40 hover:opacity-95 transition flex items-center justify-center space-x-2 shrink-0">
-                            <span x-show="!isFetching">Puxar Comentários</span>
+                        <button @click="fetchCommentsReal()" :disabled="isFetching" class="px-8 py-3.5 rounded-2xl insta-gradient-bg text-white font-extrabold text-sm shadow-xl shadow-purple-900/40 hover:opacity-95 transition flex items-center justify-center space-x-2 shrink-0">
+                            <span x-show="!isFetching">Puxar Comentários Reais</span>
                             <span x-show="isFetching" class="flex items-center space-x-2">
                                 <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                <span>Lendo post...</span>
+                                <span x-text="fetchStatus">Conectando...</span>
                             </span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Extra option: toggle manual paste if needed -->
                 <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span class="text-xs text-slate-400">Ou prefere colar manualmente a lista?</span>
-                    <button @click="showManualPaste = !showManualPaste" class="text-xs text-purple-400 hover:text-purple-300 font-semibold underline">
-                        <span x-text="showManualPaste ? 'Ocultar colagem manual' : 'Colar comentários manualmente'"></span>
+                    <span class="text-xs text-slate-400">Ou use dados de exemplo para testes:</span>
+                    <button @click="loadSampleData()" class="text-xs text-purple-400 hover:text-purple-300 font-semibold underline">
+                        ✨ Carregar 40 comentários de teste
                     </button>
-                </div>
-
-                <!-- Manual Paste Box (Collapsible) -->
-                <div x-show="showManualPaste" x-cloak class="pt-2 space-y-2">
-                    <textarea x-model="manualInput" @input="processManualComments()" rows="4" class="w-full bg-[#04060B] border border-white/10 rounded-xl p-3 text-xs text-slate-200 font-mono focus:outline-none focus:border-purple-500" placeholder="@usuario: comentário aqui..."></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- STEP 2: GiveAway Draw Workspace (Appears after fetching comments) -->
-        <div x-show="participants.length > 0" x-transition class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- STEP 2 & 3: Live Draw Workspace & Comments Inspector -->
+        <div x-show="rawComments.length > 0" x-transition class="space-y-10">
             
-            <!-- Left Column: Stats & Rules (5 cols) -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <div class="glass-panel rounded-3xl p-6 shadow-xl grid grid-cols-2 gap-4 text-center">
-                    <div class="p-4 rounded-2xl bg-white/5">
-                        <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Carregados</span>
-                        <span class="text-3xl font-black font-mono text-white" x-text="rawCommentsCount">0</span>
+            <!-- Live Giveaway Machine -->
+            <div class="max-w-4xl mx-auto glass-panel rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl border border-purple-500/30">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-600/10 via-transparent to-pink-600/10 pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl insta-gradient-bg mx-auto flex items-center justify-center shadow-2xl shadow-purple-900/40 mb-5">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
-                    <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20">
-                        <span class="text-xs text-purple-400 uppercase font-semibold block mb-1">Aptos</span>
-                        <span class="text-3xl font-black font-mono text-purple-300" x-text="participants.length">0</span>
+
+                    <span class="text-xs uppercase tracking-widest text-purple-400 font-extrabold block mb-1">Passo 2: Sorteio Oficial</span>
+                    <h2 class="text-2xl font-bold text-white mb-2">Tômbola de Sorteio Ao Vivo</h2>
+                    <p class="text-slate-400 text-sm mb-6" x-text="`Sorteando entre ${participants.length} participantes aptos (${rawComments.length} comentários raspados).`"></p>
+
+                    <!-- Rolling Display -->
+                    <div class="mb-6 p-6 rounded-2xl bg-[#04060B] border border-purple-500/40 min-h-[140px] flex flex-col items-center justify-center relative">
+                        <span class="absolute top-3 left-4 text-[10px] uppercase tracking-widest text-purple-400 font-mono font-bold" x-text="isDrawing ? 'Sorteando em tempo real...' : (hasDrawn ? 'Vencedor Sorteado!' : 'Aguardando Sorteio')"></span>
+                        
+                        <div class="text-3xl sm:text-4xl font-black font-mono insta-gradient-text tracking-wider my-2" x-text="currentDisplayUser">@participante</div>
+                        <p class="text-xs text-slate-400 italic max-w-lg truncate px-4" x-text="currentDisplayComment">"Comentário premiado"</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button 
+                            @click="startDraw()" 
+                            :disabled="participants.length === 0 || isDrawing"
+                            :class="participants.length > 0 && !isDrawing ? 'insta-gradient-bg hover:opacity-95 shadow-xl shadow-purple-900/40 cursor-pointer' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
+                            class="px-10 py-4 rounded-2xl font-extrabold text-base text-white transition transform active:scale-95">
+                            <span x-show="!isDrawing">🎉 Sortear Vencedor Agora!</span>
+                            <span x-show="isDrawing">Sorteando...</span>
+                        </button>
+
+                        <template x-if="hasDrawn && !isDrawing">
+                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <button @click="startDraw()" class="px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition border border-white/10">
+                                    🔄 Refazer Sorteio
+                                </button>
+                                <button @click="confirmWinner()" class="px-6 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-emerald-900/40">
+                                    ✅ Confirmar Vencedor
+                                </button>
+                            </div>
+                        </template>
                     </div>
                 </div>
-
-                <div class="glass-panel rounded-3xl p-6 shadow-xl space-y-4">
-                    <h3 class="text-sm font-semibold text-white flex items-center space-x-2">
-                        <svg class="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                        <span>Regras do Sorteio</span>
-                    </h3>
-
-                    <label class="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 cursor-pointer hover:border-white/10 transition">
-                        <div>
-                            <span class="text-sm font-medium text-white block">Apenas 1 comentário por @usuário</span>
-                            <span class="text-xs text-slate-400">Remove duplicadas automaticamente</span>
-                        </div>
-                        <input type="checkbox" x-model="rules.removeDuplicates" @change="reapplyRules()" class="w-5 h-5 rounded border-white/20 bg-slate-900 text-pink-600 focus:ring-pink-500">
-                    </label>
-
-                    <div class="p-3 rounded-2xl bg-white/5 border border-white/5 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-white">Filtrar por palavra-chave</span>
-                            <input type="checkbox" x-model="rules.useKeyword" @change="reapplyRules()" class="w-5 h-5 rounded border-white/20 bg-slate-900 text-pink-600 focus:ring-pink-500">
-                        </div>
-                        <div x-show="rules.useKeyword" x-cloak>
-                            <input type="text" x-model="rules.keyword" @input="reapplyRules()" placeholder="Ex: eu quero, participando" class="w-full bg-[#04060B] border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pink-500 font-mono">
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Right Column: Live Draw Machine (7 cols) -->
-            <div class="lg:col-span-7 space-y-6">
-
-                <div class="glass-panel rounded-3xl p-8 text-center relative overflow-hidden shadow-2xl border border-purple-500/30">
-                    <div class="absolute inset-0 bg-gradient-to-b from-purple-600/10 via-transparent to-pink-600/10 pointer-events-none"></div>
-
-                    <div class="relative z-10">
-                        <div class="w-16 h-16 rounded-2xl insta-gradient-bg mx-auto flex items-center justify-center shadow-2xl shadow-purple-900/40 mb-5">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <!-- Confirmed Winner Showcase -->
+            <template x-if="confirmedWinner">
+                <div class="max-w-4xl mx-auto glass-panel rounded-3xl p-6 border-2 border-emerald-500/50 bg-emerald-950/20 shadow-2xl animate-fade-in">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         </div>
-
-                        <h2 class="text-2xl font-bold text-white mb-2">Tômbola de Sorteio Ao Vivo</h2>
-                        <p class="text-slate-400 text-sm mb-6">Tudo pronto! Clique abaixo para sortear o vencedor entre os comentários carregados.</p>
-
-                        <!-- Rolling Display Box -->
-                        <div class="mb-6 p-6 rounded-2xl bg-[#04060B] border border-purple-500/40 min-h-[130px] flex flex-col items-center justify-center relative">
-                            <span class="absolute top-3 left-4 text-[10px] uppercase tracking-widest text-purple-400 font-mono font-bold" x-text="isDrawing ? 'Sorteando em tempo real...' : (hasDrawn ? 'Vencedor Sorteado!' : 'Aguardando Sorteio')"></span>
-                            
-                            <div class="text-3xl sm:text-4xl font-black font-mono insta-gradient-text tracking-wider my-2" x-text="currentDisplayUser">@participante</div>
-                            <p class="text-xs text-slate-400 italic max-w-md truncate px-4" x-text="currentDisplayComment">"Comentário premiado"</p>
+                        <div class="flex-1">
+                            <span class="text-xs uppercase tracking-widest text-emerald-400 font-extrabold block">Vencedor Oficial Confirmado! 🏆</span>
+                            <h3 class="text-xl font-bold text-white font-mono" x-text="confirmedWinner.user"></h3>
+                            <p class="text-xs text-slate-300 italic mt-0.5" x-text="`"${confirmedWinner.comment}"`"></p>
                         </div>
+                        <button @click="confirmedWinner = null" class="text-xs text-slate-400 hover:text-white p-2">Limpar</button>
+                    </div>
+                </div>
+            </template>
 
-                        <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <button 
-                                @click="startDraw()" 
-                                :disabled="participants.length === 0 || isDrawing"
-                                :class="participants.length > 0 && !isDrawing ? 'insta-gradient-bg hover:opacity-95 shadow-xl shadow-purple-900/40 cursor-pointer' : 'bg-slate-800 text-slate-500 cursor-not-allowed'"
-                                class="px-8 py-4 rounded-2xl font-extrabold text-base text-white transition transform active:scale-95">
-                                <span x-show="!isDrawing">🎉 Sortear Vencedor Agora!</span>
-                                <span x-show="isDrawing">Sorteando...</span>
-                            </button>
-
-                            <template x-if="hasDrawn && !isDrawing">
-                                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                                    <button @click="startDraw()" class="px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition border border-white/10">
-                                        🔄 Refazer Sorteio
-                                    </button>
-                                    <button @click="confirmWinner()" class="px-6 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-emerald-900/40">
-                                        ✅ Confirmar Vencedor
-                                    </button>
-                                </div>
-                            </template>
-                        </div>
+            <!-- Comments Inspector Table & Filters -->
+            <div class="max-w-6xl mx-auto glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl">
+                
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-purple-400 font-extrabold block">Passo 3: Inspeção de Dados</span>
+                        <h3 class="text-xl font-bold text-white">Comentários Raspados da Publicação</h3>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <input type="text" x-model="searchQuery" placeholder="Pesquisar @usuário ou palavra..." class="bg-[#04060B] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 font-mono w-full sm:w-64">
+                        
+                        <label class="flex items-center space-x-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" x-model="rules.removeDuplicates" @change="applyFilters()" class="w-4 h-4 rounded border-white/20 bg-slate-900 text-pink-600 focus:ring-pink-500">
+                            <span>Remover duplicadas</span>
+                        </label>
                     </div>
                 </div>
 
-                <!-- Confirmed Winner Card -->
-                <template x-if="confirmedWinner">
-                    <div class="glass-panel rounded-3xl p-6 border-2 border-emerald-500/50 bg-emerald-950/10 shadow-2xl">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            </div>
-                            <div class="flex-1">
-                                <span class="text-xs uppercase tracking-widest text-emerald-400 font-extrabold block">Vencedor Oficial Confirmado! 🏆</span>
-                                <h3 class="text-xl font-bold text-white font-mono" x-text="confirmedWinner.user"></h3>
-                                <p class="text-xs text-slate-300 italic mt-0.5" x-text="`"${confirmedWinner.comment}"`"></p>
-                            </div>
-                            <button @click="confirmedWinner = null" class="text-xs text-slate-400 hover:text-white p-2">Limpar</button>
-                        </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5 text-center">
+                        <span class="text-[10px] uppercase text-slate-400 font-semibold block mb-1">Total Raspado</span>
+                        <span class="text-xl font-bold font-mono text-white" x-text="rawComments.length">0</span>
                     </div>
-                </template>
+                    <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center">
+                        <span class="text-[10px] uppercase text-purple-400 font-semibold block mb-1">Aptos ao Sorteio</span>
+                        <span class="text-xl font-bold font-mono text-purple-300" x-text="participants.length">0</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-center">
+                        <span class="text-[10px] uppercase text-pink-400 font-semibold block mb-1">Duplicadas Removidas</span>
+                        <span class="text-xl font-bold font-mono text-pink-300" x-text="rawComments.length - participants.length">0</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                        <span class="text-[10px] uppercase text-emerald-400 font-semibold block mb-1">Status da API</span>
+                        <span class="text-xl font-bold font-mono text-emerald-300">Conectado</span>
+                    </div>
+                </div>
+
+                <div class="max-h-[450px] overflow-y-auto rounded-2xl border border-white/10 bg-[#04060B]/60 scrollbar-thin scrollbar-thumb-slate-700">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-400 bg-white/5 font-mono">
+                                <th class="py-3 px-4">#</th>
+                                <th class="py-3 px-4">Usuário do Instagram</th>
+                                <th class="py-3 px-4">Comentário Publicado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-xs">
+                            <template x-for="(item, index) in filteredTableComments" :key="index">
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="py-3 px-4 font-mono text-slate-500" x-text="index + 1"></td>
+                                    <td class="py-3 px-4 font-mono font-bold text-purple-300" x-text="item.user"></td>
+                                    <td class="py-3 px-4 text-slate-200" x-text="item.comment"></td>
+                                </tr>
+                            </template>
+                            <template x-if="filteredTableComments.length === 0">
+                                <tr>
+                                    <td colspan="3" class="py-8 text-center text-slate-500">Nenhum comentário encontrado.</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
 
@@ -253,59 +275,29 @@
 
     </main>
 
-    <!-- Login Modal -->
-    <template x-if="showLoginModal">
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-transition.opacity>
-            <div class="glass-panel rounded-3xl p-8 max-w-md w-full text-center relative border border-purple-500/40 shadow-2xl">
-                <button @click="showLoginModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-white/5">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-
-                <div class="w-16 h-16 rounded-2xl insta-gradient-bg mx-auto flex items-center justify-center shadow-xl mb-5">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.790-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                </div>
-
-                <h3 class="text-xl font-bold text-white mb-2">Conectar ao Instagram</h3>
-                <p class="text-xs text-slate-400 mb-6">Para extrair comentários de publicações públicas de forma segura através da API da Meta Business.</p>
-
-                <div class="space-y-3">
-                    <button @click="loginSimulated()" class="w-full py-3.5 rounded-xl insta-gradient-bg text-white font-bold text-sm shadow-xl hover:opacity-95 transition flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c..."></path></svg>
-                        <span>Autorizar via Facebook / Meta</span>
-                    </button>
-                    <button @click="showLoginModal = false" class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs transition">
-                        Cancelar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </template>
-
     <!-- Footer -->
-    <footer class="border-t border-white/15 bg-darkBg mt-20 py-8 text-center text-xs text-slate-500">
-        <p>Insta Sorteio Live — Ferramenta automatizada de extração e sorteio.</p>
+    <footer class="border-t border-white/10 bg-darkBg mt-20 py-8 text-center text-xs text-slate-500">
+        <p>Insta Sorteio Pro — Extrator via Apify e Sorteador Transparente.</p>
     </footer>
 
-    <!-- Alpine App Logic -->
+    <!-- App Logic -->
     <script>
-        function instaGiveawayApp() {
+        function giveawayApp() {
             return {
-                isLoggedIn: false,
-                username: '',
-                showLoginModal: false,
                 postUrl: '',
+                apifyToken: localStorage.getItem('apify_token') || '',
+                showSettings: false,
                 isFetching: false,
-                showManualPaste: false,
-                manualInput: '',
+                fetchStatus: 'Iniciando Apify...',
                 
-                rawCommentsCount: 0,
-                rawCommentsList: [],
+                rawComments: [],
                 participants: [],
+                searchQuery: '',
+                
                 rules: {
-                    removeDuplicates: true,
-                    useKeyword: false,
-                    keyword: ''
+                    removeDuplicates: true
                 },
+
                 isDrawing: false,
                 hasDrawn: false,
                 currentDisplayUser: '@sorteado_aqui',
@@ -313,79 +305,88 @@
                 winner: null,
                 confirmedWinner: null,
 
-                openLoginModal() {
-                    this.showLoginModal = true;
+                saveToken() {
+                    localStorage.setItem('apify_token', this.apifyToken);
+                    alert('Token salvo com sucesso no navegador!');
+                    this.showSettings = false;
                 },
 
-                loginSimulated() {
-                    this.isLoggedIn = true;
-                    this.username = '@meu_perfil_insta';
-                    this.showLoginModal = false;
+                loadSampleData() {
+                    this.isFetching = true;
+                    this.fetchStatus = 'Carregando amostra...';
+                    setTimeout(() => {
+                        this.isFetching = false;
+                        this.postUrl = 'https://www.instagram.com/p/DF3XyZ_exemplo/';
+                        let sample = [
+                            { user: '@julia_silva', comment: 'Eu quero muito ganhar o kit! @amigo1' },
+                            { user: '@carlos_dev', comment: 'Participando do sorteio #quero' },
+                            { user: '@mariana123', comment: 'Melhor sorteio @amigo2 @amigo3' },
+                            { user: '@julia_silva', comment: 'Comentando de novo para garantir!' },
+                            { user: '@lucas_souza', comment: 'Participando muito! eu quero' },
+                            { user: '@beatriz_costa', comment: 'Quero ganhar demais!!' }
+                        ];
+                        this.rawComments = sample;
+                        this.applyFilters();
+                    }, 800);
                 },
 
-                logout() {
-                    this.isLoggedIn = false;
-                    this.username = '';
-                },
-
-                fetchCommentsByLink() {
+                async fetchCommentsReal() {
+                    if (!this.apifyToken.trim()) {
+                        alert('Por favor, clique em "Configurar Token" no topo e insira o seu Personal API Token do Apify.');
+                        this.showSettings = true;
+                        return;
+                    }
                     if (!this.postUrl.trim()) {
                         alert('Por favor, insira o link da postagem do Instagram.');
                         return;
                     }
 
                     this.isFetching = true;
-                    
-                    // Simulação real de requisição e extração de comentários da URL
-                    setTimeout(() => {
-                        this.isFetching = false;
+                    this.fetchStatus = 'Iniciando Apify Actor...';
+
+                    try {
+                        const actorId = 'apify~instagram-comment-scraper';
                         
-                        // Dados gerados automaticamente simulando a leitura do post
-                        let mockData = [
-                            { user: '@julia_silva', comment: 'Eu quero muito ganhar esse super kit!! @amigo1 @amigo2' },
-                            { user: '@carlos_dev', comment: 'Participando do sorteio! #quero' },
-                            { user: '@mariana123', comment: 'Melhor sorteio do ano @amigo3' },
-                            { user: '@julia_silva', comment: 'Segundo comentário pra garantir!' },
-                            { user: '@lucas_souza', comment: 'Participando muito! eu quero' },
-                            { user: '@beatriz_costa', comment: 'Quero ganhar demais!! @amigo1' },
-                            { user: '@roberto_silva', comment: 'Top demais essa promoção' },
-                            { user: '@camila_lima', comment: 'Eu quero! @amigo6' },
-                            { user: '@gabriel_santos', comment: 'Participando do sorteio oficial #quero' },
-                            { user: '@fernanda_lima', comment: 'Quero muito levar esse prêmio @amigo4' }
-                        ];
+                        // 1. Iniciar run no Apify
+                        let runRes = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${this.apifyToken}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                directUrls: [this.postUrl],
+                                resultsLimit: 300
+                            })
+                        });
 
-                        this.rawCommentsList = mockData;
-                        this.rawCommentsCount = mockData.length;
-                        this.reapplyRules();
-                    }, 2000);
+                        if (!runRes.ok) throw new Error('Falha ao acionar a API do Apify. Verifique seu token.');
+
+                        let runJson = await runRes.json();
+                        let datasetId = runJson.data.defaultDatasetId;
+
+                        this.fetchStatus = 'Raspar comentários (Aguarde ~10s)...';
+                        await new Promise(r => setTimeout(r, 10000));
+
+                        // 2. Buscar itens do dataset
+                        let dataRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${this.apifyToken}`);
+                        let items = await dataRes.json();
+
+                        let formatted = items.map(item => ({
+                            user: '@' + (item.ownerUsername || item.username || 'usuario'),
+                            comment: item.text || item.comment || ''
+                        }));
+
+                        this.rawComments = formatted;
+                        this.applyFilters();
+
+                    } catch (err) {
+                        console.error(err);
+                        alert('Erro ao raspar via Apify: ' + err.message);
+                    } finally {
+                        this.isFetching = false;
+                    }
                 },
 
-                processManualComments() {
-                    const lines = this.manualInput.split('\n').filter(l => l.trim() !== '');
-                    let parsed = [];
-                    for (let line of lines) {
-                        let user = 'anônimo';
-                        let comment = line;
-                        if (line.includes(':')) {
-                            let parts = line.split(':');
-                            user = parts[0].trim().replace('@', '');
-                            comment = parts.slice(1).join(':').trim();
-                        }
-                        parsed.push({ user: '@' + user, comment: comment });
-                    }
-                    this.rawCommentsList = parsed;
-                    this.rawCommentsCount = parsed.length;
-                    this.reapplyRules();
-                },
-
-                reapplyRules() {
-                    let list = [...this.rawCommentsList];
-
-                    if (this.rules.useKeyword && this.rules.keyword.trim() !== '') {
-                        const kw = this.rules.keyword.toLowerCase();
-                        list = list.filter(p => p.comment.toLowerCase().includes(kw));
-                    }
-
+                applyFilters() {
+                    let list = [...this.rawComments];
                     if (this.rules.removeDuplicates) {
                         let seen = new Set();
                         let unique = [];
@@ -401,6 +402,14 @@
                     }
                 },
 
+                get filteredTableComments() {
+                    if (!this.searchQuery.trim()) return this.participants;
+                    const q = this.searchQuery.toLowerCase();
+                    return this.participants.filter(item => 
+                        item.user.toLowerCase().includes(q) || item.comment.toLowerCase().includes(q)
+                    );
+                },
+
                 startDraw() {
                     if (this.participants.length === 0 || this.isDrawing) return;
 
@@ -409,7 +418,7 @@
                     this.confirmedWinner = null;
 
                     let counter = 0;
-                    let maxCount = 28;
+                    let maxCount = 30;
                     let intervalTime = 70;
 
                     let roll = () => {
@@ -434,7 +443,7 @@
                             this.hasDrawn = true;
 
                             confetti({
-                                particleCount: 140,
+                                particleCount: 150,
                                 spread: 90,
                                 origin: { y: 0.6 }
                             });
@@ -448,8 +457,8 @@
                     if (this.winner) {
                         this.confirmedWinner = this.winner;
                         confetti({
-                            particleCount: 80,
-                            spread: 60,
+                            particleCount: 90,
+                            spread: 70,
                             origin: { y: 0.4 }
                         });
                     }
